@@ -44,3 +44,34 @@ cartoon "IMPORTANT SYSTEM INSTRUCTION" payload. Known gaps for production:
 
 These limitations are documented for future work. The three-layer defense
 as built is a reasonable starting point for low-to-medium-risk applications.
+
+## Level 5 — Deferred to backlog
+
+These items were scoped into Level 5 but deferred for time. Each is a
+real production concern; documented here so they're not forgotten.
+
+### Pass 3 remaining
+1. **Fallback handler** — the Phase 14 agent still has no graceful refusal
+   path for off-topic queries (Phase 10 Case 4 failure). Phase 6's router
+   pattern needs to be re-grafted onto the planning layer.
+
+2. **Secrets scanning on runs.log** — runs.log accumulates JSONL telemetry
+   forever. A simple post-processor should scan for accidentally-leaked
+   secrets (API keys, passwords, PII) using detect-secrets or trufflehog
+   patterns and redact them. Add cron-based rotation/redaction.
+
+3. **Red team test battery** — the single phase13_redteam.py is one test.
+   Production needs a suite of ~20-50 adversarial cases (jailbreaks, exfil
+   attempts, capability escalation, data poisoning) run on every commit.
+
+### Pass 4 — Production readiness review (NOT YET RUN)
+The structured walkthrough that constitutes the actual Level 5 gate:
+- Shadow-mode deployment design (run new agent next to old, compare)
+- Canary rollout strategy (1% → 10% → 100%)
+- SLO definition (latency, cost-per-incident, eval pass rate, fabrication rate)
+- Error budget policy (when do we roll back vs. accept failures?)
+- On-call playbook (what does a human do at 3 AM if the agent misbehaves?)
+- Cost projection at scale (model the bill at 100/1K/10K/100K incidents per day)
+- Monitoring & alerting design (which metrics, what thresholds)
+
+This is reflective work, not coding. Should be done with a fresh head.
